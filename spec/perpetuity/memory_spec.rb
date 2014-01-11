@@ -60,8 +60,9 @@ module Perpetuity
     end
 
     describe 'indexing' do
-      it 'does nothing' do
-        subject.index(klass, 'anything')
+      it 'keeps track of what attributes were indexed' do
+        subject.index(klass, Perpetuity::Attribute.new('name'))
+        subject.indexes(klass).map{|a| a.name}.should include('name')
       end
     end
 

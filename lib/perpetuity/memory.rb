@@ -8,7 +8,7 @@ module Perpetuity
   class Memory
     def initialize options = {}
       @cache    = Hash.new
-      @indexes  = Hash.new { |hash, key| hash[key] = active_indexes(key) }
+      @indexes  = Hash.new
     end
 
     def insert klass, attributes, _
@@ -99,15 +99,15 @@ module Perpetuity
 
 
     def index klass, attribute, options={}
-      @indexes[klass] ||= Set.new
+      indexes(klass) << attribute
     end
 
     def indexes klass
-      @indexes[klass]
+      @indexes[klass] ||= Set.new
     end
 
     def active_indexes klass
-      Set.new
+      indexes(klass)
     end
 
     def activate_index! klass
