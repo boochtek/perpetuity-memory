@@ -11,32 +11,22 @@ module Perpetuity
       @indexes  = Hash.new
     end
 
-    def insert klass, attributes, _
-      if attributes.is_a? Array
-        return attributes.map{|attr| insert(klass, attr, _)}
+    def insert klass, object, _
+      if object.is_a? Array
+        return object.map{|obj| insert(klass, obj, _)}
       end
 
-      unless attributes.has_key? :id
-        attributes[:id] = SecureRandom.uuid
-      end
+      id = get_id(object) || set_id(object, SecureRandom.uuid)
 
-      # make keys indifferent
-      attributes.default_proc = proc do |h, k|
-        case k
-          when String then sym = k.to_sym; h[sym] if h.key?(sym)
-          when Symbol then str = k.to_s; h[str] if h.key?(str)
-        end
-      end
-
-      collection(klass) << attributes
-      attributes[:id]
+      collection(klass)[id] = object
+      id
     end
 
     def count klass, criteria=nil, &block
       if block_given?
-        collection(klass).select(&block).size
+        collection(klass).values.select(&block).size
       elsif criteria
-        collection(klass).select(&criteria).size
+        collection(klass).values.select(&criteria).size
       else
         collection(klass).size
       end
@@ -47,19 +37,19 @@ module Perpetuity
     end
 
     def first klass
-      collection(klass).first
+      all(klass).first
     end
 
     def find klass, id
-      collection(klass).find{|o| o[:id] = id}
+      collection(klass)[id]
     end
 
     def retrieve klass, criteria, options = {}
-      collection(klass).find_all(&criteria)
+      collection(klass).values.find_all(&criteria)
     end
 
     def all klass
-      collection(klass)
+      collection(klass).values
     end
 
     def delete object, klass=nil
@@ -90,11 +80,11 @@ module Perpetuity
     end
 
     def serialize object, mapper
-      Marshal.dump(object)
+      object.dup
     end
 
     def unserialize data, mapper
-      Marshal.load(data)
+      data.dup
     end
 
 
@@ -124,8 +114,31 @@ module Perpetuity
     protected
 
     def collection klass
-      @cache[klass] = Array.new unless @cache.key? klass
+      @cache[klass] = Hash.new unless @cache.has_key? klass
       @cache[klass]
+    end
+
+    def get_id(object)
+      if object.respond_to?(:id)
+        object.id
+      elsif object.respond_to?(:fetch)
+        object.fetch(:id, nil)
+      elsif object.respond_to?(:[])
+        object[:id] || nil
+      else
+        object.instance_variable_get(:@id)
+      end
+    end
+
+    def set_id(object, id)
+      if object.respond_to?(:id=)
+        object.id = id
+      elsif object.respond_to?(:[]=)
+        object[:id] = id
+      else
+        object.instance_variable_set(:@id, id)
+      end
+      id
     end
   end
 end
