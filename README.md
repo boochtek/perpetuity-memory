@@ -1,6 +1,6 @@
 # Perpetuity::Memory
 
-This is the in-memory adapter for Perpetuity.
+This is the in-memory adapter for the [Perpetuity](https://github.com/jgaskins/perpetuity) ORM.
 
 ## Installation
 
@@ -26,6 +26,12 @@ Perpetuity.data_source :memory
 ```
 
 For information on using Perpetuity to persist your Ruby objects, see the [main Perpetuity repo](https://github.com/jgaskins/perpetuity).
+
+## TODO
+
+* Make sure update works.
+* Make sure save works.
+* Make sure identity map works properly.
 
 ## Contributing
 
