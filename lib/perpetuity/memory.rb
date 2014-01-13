@@ -142,3 +142,7 @@ module Perpetuity
     end
   end
 end
+
+
+# Register the adapter with Perpetuity.
+Perpetuity::Configuration.adapters[:memory] = 'Perpetuity::Memory'
