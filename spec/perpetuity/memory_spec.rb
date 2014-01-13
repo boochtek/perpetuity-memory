@@ -38,7 +38,7 @@ module Perpetuity
     it 'gets the first object' do
       value = {value: 1}
       subject.insert klass, value, []
-      subject.first(klass)[:value].should == value['value']
+      subject.first(klass)[:value].should == value[:value]
     end
 
     it 'gets all objects' do
@@ -47,12 +47,12 @@ module Perpetuity
       subject.all(klass).should == values
     end
 
-    it 'retrieves by ID if the ID is a string' do
+    it 'retrieves by ID' do
       time = Time.now.utc
       id = subject.insert Object, {inserted: time}, []
 
-      object = subject.retrieve(Object, subject.query{|o| o[:id] == id.to_s }).first
-      retrieved_time = object["inserted"]
+      object = subject.find(Object, id)
+      retrieved_time = object[:inserted]
       retrieved_time.to_f.should be_within(0.001).of time.to_f
     end
 
@@ -74,9 +74,9 @@ module Perpetuity
         subject.increment klass, id, :count
         subject.increment klass, id, :count, 10
         query = subject.query { |o| o[:id] == id }
-        subject.retrieve(klass, query).first['count'].should be == 12
+        subject.retrieve(klass, query).first[:count].should be == 12
         subject.increment klass, id, :count, -1
-        subject.retrieve(klass, query).first['count'].should be == 11
+        subject.retrieve(klass, query).first[:count].should be == 11
       end
     end
   end
