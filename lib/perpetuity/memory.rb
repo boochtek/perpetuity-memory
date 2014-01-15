@@ -111,6 +111,10 @@ module Perpetuity
       block
     end
 
+    def drop_collection klass
+      @cache[klass] = Hash.new
+    end
+
     protected
 
     def collection klass
