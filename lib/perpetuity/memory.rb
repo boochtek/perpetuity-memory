@@ -149,4 +149,4 @@ end
 
 
 # Register the adapter with Perpetuity.
-Perpetuity::Configuration.adapters[:memory] = 'Perpetuity::Memory'
+Perpetuity.register_adapter :memory => Perpetuity::Memory
